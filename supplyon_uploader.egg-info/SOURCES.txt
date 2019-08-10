@@ -1,0 +1,7 @@
+setup.py
+supplyon_uploader.egg-info/PKG-INFO
+supplyon_uploader.egg-info/SOURCES.txt
+supplyon_uploader.egg-info/dependency_links.txt
+supplyon_uploader.egg-info/not-zip-safe
+supplyon_uploader.egg-info/requires.txt
+supplyon_uploader.egg-info/top_level.txt
