@@ -96,6 +96,51 @@ def validate_mandatory_fields(data):
             valid_rows.append(row_validity)
     return valid_rows
 
+def validate_optional_fields(data):
+    '''
+    Ensures any values provided for optional fields are of the correct type
+    Parameters:
+        data: A list of dicts, where each dict represents one row of data.
+
+    Returns:
+        A list of dicts with the overall status and status of each field
+        [{
+            'valid': True/False,
+            'field1': True/False
+        }]
+    '''
+
+    config = get_config()
+    if 'optional_fields' not in config.keys():
+        sys.exit('Config file missing optional_fields')
+    
+    mandatory_fields = config['optional_fields']
+    optional_keys = mandatory_fields.keys()
+    valid_rows = []
+        
+    # Loop through the data
+    for row in data:
+        all_valid = True
+        row_validity = {}
+        # Loop through each field in the data
+        for key in optional_keys:
+            if key in row:
+                # Check if data type matches configured values in the config file
+                field_type = get_data_type(mandatory_fields[key])
+                data_value = row[key]
+                is_correct_type = isinstance(data_value, field_type) or data_value is None
+                row_validity[key] = is_correct_type
+                if is_correct_type is False:
+                    all_valid = False
+            else:
+                all_valid = False
+                row_validity[key] = False
+
+            row_validity['all_valid'] = all_valid
+            valid_rows.append(row_validity)
+    for key in valid_rows[0]:
+        print(f'{key}: {valid_rows[0][key]}')
+    return valid_rows
 
 
         
