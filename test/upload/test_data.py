@@ -3,6 +3,7 @@ from supplyon_uploader.uploader.data import get_data_type
 from supplyon_uploader.uploader.data import validate_mandatory_fields
 import datetime
 from pathlib import Path 
+from copy import deepcopy
 
 test_data_path = Path('.').absolute() /'test/data/test_data.csv'
 
@@ -84,6 +85,35 @@ def test_validate_mandatory_fields_passes_valid_data():
     valid_data[1]['all_valid'].should.be.true
     for key in mandatory_fields:
         valid_data[1][key].should.be.true
+
+def test_validate_mandatory_fields_fails_missing_field():
+    missing_data = deepcopy(data)
+    missing_data[0].pop('Part_Material_Number_Buyer')
+    valid_data = validate_mandatory_fields(missing_data)
+    valid_data[0]['all_valid'].should.be.false
+    valid_data[0]['Part_Material_Number_Buyer'].should.be.false
+
+def test_validate_mandatory_fields_fails_with_missing_data():
+    missing_data = deepcopy(data)
+    missing_data[0]['Part_Material_Number_Buyer'] = None
+    valid_data = validate_mandatory_fields(missing_data)
+    valid_data[0]['all_valid'].should.be.false
+    valid_data[0]['Part_Material_Number_Buyer'].should.be.false
+
+def test_validate_mandatory_fields_fails_wrong_type():
+    missing_data = deepcopy(data)
+    # This should be a string
+    missing_data[0]['Part_Material_Number_Buyer'] = 0 
+    # This should be a datetime.datetime
+    missing_data[0]['Planned_Production_Start_Date'] = 0 
+    # This should be an integer
+    missing_data[0]['Current_Work_Order_Qty'] = "0" 
+
+    valid_data = validate_mandatory_fields(missing_data)
+    valid_data[0]['all_valid'].should.be.false
+    valid_data[0]['Part_Material_Number_Buyer'].should.be.false
+    valid_data[0]['Planned_Production_Start_Date'].should.be.false
+    valid_data[0]['Current_Work_Order_Qty'].should.be.false
 
 
 
