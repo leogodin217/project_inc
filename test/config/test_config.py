@@ -15,14 +15,7 @@ def test_get_config_contains_headers():
 
 def test_headers_are_lists_of_dicts():
     config = get_config(config_path)
-    config['supplyon_headers'].should.be.a(list)
-    for header in config['supplyon_headers']:
-        header.should.be.a(dict)
-
-def test_supplyon_url_exists():
-    config = get_config(config_path)
-    config.should.have.key('supplyon_url')
-    config['supplyon_url'].should.be.a(str)
+    config['supplyon_headers'].should.be.a(dict)
 
 def test_mandatory_fields_is_dict():
         config = get_config(config_path)

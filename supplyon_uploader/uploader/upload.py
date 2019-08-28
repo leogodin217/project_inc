@@ -18,6 +18,8 @@ def get_wsdl(config):
         sys.exit('wsdl is not defined in config.json') 
     wsdl_dir = Path('.').absolute().parent
     wsdl = wsdl_dir /config['wsdl']
+    if not wsdl.exists():
+        sys.exit(f'Wsdl does not exist {wsdl.absolute()}')
     print(Path('.').absolute())
     print(wsdl.as_posix())
     return wsdl.as_posix()
@@ -34,7 +36,8 @@ def get_client(config):
     if 'supplyon_headers' not in config:
         sys.exit('supplyon_headers not configured in config.json')
     headers = config['supplyon_headers']
-    wsdl = get_wsdl()
+    print(headers)
+    wsdl = get_wsdl(config)
     settings = Settings(extra_http_headers=headers)
     client = Client(wsdl=wsdl, settings=settings)
     return client
@@ -52,5 +55,13 @@ def prepare_data(data, config):
     '''
     if 'supplyon_headers' not in config:
         sys.exit('headers not configured in config.json')
+    
+    client = get_client(config)
 
-    return data    
+    # These are the data types from the WSDL
+    ArrayOfProductionData = client.get_type('ns0:ArrayOfProductionData')
+    ProductionData = client.get_type('ns0:ProductionData')
+    production_data = ArrayOfProductionData(
+        [ProductionData(**field) for field in data]
+    )
+    return production_data    
