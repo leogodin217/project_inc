@@ -56,4 +56,16 @@ def test_config_has_default_date():
 
 def test_config_has_wsdl():
         config = get_config(config_path)
-        config.should.have.key("wsdl")
+        config.should.have.key('wsdl')
+
+def test_config_has_customers():
+        config = get_config(config_path)
+        config.should.have.key('customers')
+        config['customers'].should.be.a(list)
+        for item in config['customers']:
+                item.should.be.a(str)
+
+def test_config_has_data_table():
+        config = get_config(config_path)
+        config.should.have.key('data_table')
+        config['data_table'].should.be.a(str)
