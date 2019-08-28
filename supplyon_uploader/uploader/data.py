@@ -51,13 +51,14 @@ def get_data_type(description):
         data_type = data_types[description]
     return data_type
     
-def validate_mandatory_fields(data):
+def validate_mandatory_fields(data, config):
     '''
     Ensures all data includes values for the mandatory fields and mandatory
     fields have the correct type.
 
     Parameters:
         data: A list of dicts, where each dict represents one row of data.
+        config: Dict with configuration from config.json
 
     Returns:
         A list of dicts with the overall status and status of each field
@@ -67,7 +68,6 @@ def validate_mandatory_fields(data):
         }]
     '''
 
-    config = get_config()
     if 'mandatory_fields' not in config.keys():
         sys.exit('Config file missing mandatory_fields')
     
@@ -97,11 +97,12 @@ def validate_mandatory_fields(data):
             valid_rows.append(row_validity)
     return valid_rows
 
-def validate_optional_fields(data):
+def validate_optional_fields(data, config):
     '''
     Ensures any values provided for optional fields are of the correct type
     Parameters:
         data: A list of dicts, where each dict represents one row of data.
+        config: Dict with config from config.json
 
     Returns:
         A list of dicts with the overall status and status of each field
@@ -111,7 +112,6 @@ def validate_optional_fields(data):
         }]
     '''
 
-    config = get_config()
     if 'optional_fields' not in config.keys():
         sys.exit('Config file missing optional_fields')
     
@@ -143,17 +143,17 @@ def validate_optional_fields(data):
         print(f'{key}: {valid_rows[0][key]}')
     return valid_rows
 
-def get_default_data(data_type):
+def get_default_data(data_type, config):
     '''
     Returns a configured value from config.json for each supported data type
 
     Parameters:
         data_type: One of "string", "integer" or "date"
+        config: Dict with configuration from config.json
     
     Returns: The default_value for the data type
     '''
 
-    config = get_config()
 
     if 'default_values' not in config:
         sys.exit('default_values missing from config.json')
@@ -162,18 +162,18 @@ def get_default_data(data_type):
     
     return config['default_values'][data_type]
 
-def set_default_values(data):
+def set_default_values(data, config):
     '''
     Sets default values for any required fields that are missing values.
 
     Parameters:
         data: A list of dicts where each dict represents one row of data
+        config: Dict with configuration from config.json
 
     Returns: A list of dicts with required missing fields filled in.
     '''
     # Ensure we do not overwrite original data
     set_data = deepcopy(data)
-    config = get_config()
     if 'mandatory_fields' not in config:
         sys.exit('mandatory_fields is missing from config.json')
     
@@ -181,7 +181,7 @@ def set_default_values(data):
     for row in set_data:
         for field, data_type in mandatory_fields.items():
             if row[field] is None:
-                row[field] = get_default_data(data_type) 
+                row[field] = get_default_data(data_type, config) 
 
     return set_data
 

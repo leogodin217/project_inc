@@ -13,7 +13,8 @@ import string
 import pytest
 
 # Config is used often
-config = get_config()
+config_path = Path('.').absolute().parent /'config.json'
+config = get_config(config_path)
 
 test_data_path = Path('.').absolute() /'test/data/test_data.csv'
 
@@ -57,7 +58,7 @@ def valid_record():
     
 def test_validate_mandatory_fields_passes_valid_data(valid_record):
     data = [deepcopy(valid_record), deepcopy(valid_record)]
-    valid_data = validate_mandatory_fields(data)
+    valid_data = validate_mandatory_fields(data, config)
     valid_data.should.be.a(list)
     valid_data[0].should.be.a(dict)
     valid_data[0]['all_valid'].should.be.true
@@ -72,14 +73,14 @@ def test_validate_mandatory_fields_passes_valid_data(valid_record):
 def test_validate_mandatory_fields_fails_missing_field(valid_record):
     missing_data =  [deepcopy(valid_record), deepcopy(valid_record)]
     missing_data[0].pop('Part_Material_Number_Buyer')
-    valid_data = validate_mandatory_fields(missing_data)
+    valid_data = validate_mandatory_fields(missing_data, config)
     valid_data[0]['all_valid'].should.be.false
     valid_data[0]['Part_Material_Number_Buyer'].should.be.false
 
 def test_validate_mandatory_fields_fails_with_missing_data(valid_record):
     missing_data = [deepcopy(valid_record), deepcopy(valid_record)]
     missing_data[0]['Part_Material_Number_Buyer'] = None
-    valid_data = validate_mandatory_fields(missing_data)
+    valid_data = validate_mandatory_fields(missing_data, config)
     valid_data[0]['all_valid'].should.be.false
     valid_data[0]['Part_Material_Number_Buyer'].should.be.false
 
@@ -92,7 +93,7 @@ def test_validate_mandatory_fields_fails_wrong_type(valid_record):
     # This should be an integer
     missing_data[0]['Actual_Start_Production_Qty'] = '0' 
 
-    valid_data = validate_mandatory_fields(missing_data)
+    valid_data = validate_mandatory_fields(missing_data, config)
     valid_data[0]['all_valid'].should.be.false
     valid_data[0]['Part_Material_Number_Buyer'].should.be.false
     valid_data[0]['Planned_Production_Start_Date'].should.be.false
@@ -116,7 +117,7 @@ def optional_record():
 
 
 def test_validate_optional_fields_passes_valid_data(optional_record):
-    valid_data = validate_optional_fields([optional_record, optional_record])
+    valid_data = validate_optional_fields([optional_record, optional_record], config)
     valid_data.should.be.a(list)
     valid_data[0].should.be.a(dict)
     valid_data[0]['all_valid'].should.be.true
@@ -132,7 +133,7 @@ def test_validate_optional_fields_passes_valid_data(optional_record):
 def test_validate_optional_fields_passes_none_values(optional_record):
     none_data = [optional_record, optional_record]
     none_data[0]['SchedLine'] = None 
-    valid_data = validate_optional_fields(none_data)
+    valid_data = validate_optional_fields(none_data, config)
     valid_data[0]['all_valid'].should.be.true
     valid_data[0]['SchedLine'].should.be.true
 
@@ -144,7 +145,7 @@ def test_validate_optional_fields_fails_with_incorrect_data_type(optional_record
     wrong_data[0]['Input_Material_Lead_Time_cal_days'] = "5"
     # Should be a date
     wrong_data[0]['Input_Material_Order_Date'] = '2018-01-01'
-    valid_data = validate_optional_fields(wrong_data)
+    valid_data = validate_optional_fields(wrong_data, config)
     valid_data[0]['all_valid'].should.be.false
     valid_data[0]['SchedLine'].should.be.false
     valid_data[0]['Input_Material_Lead_Time_cal_days'].should.be.false
@@ -154,7 +155,7 @@ def test_validate_optional_fields_fails_with_incorrect_data_type(optional_record
 def test_get_default_data_returns_correct_type():
     default_values = config['default_values']
     for data_type, value in default_values.items():
-        get_default_data(data_type).should.be.a(type(value))
+        get_default_data(data_type, config).should.be.a(type(value))
 
 def test_default_values_fills_in_missing_data(valid_record):
     data = [deepcopy(valid_record), deepcopy(valid_record)]
@@ -166,7 +167,7 @@ def test_default_values_fills_in_missing_data(valid_record):
     second_type = config['mandatory_fields'][second_field]
     second_expected = config['default_values'][second_type]
     data[1][second_field] = None
-    clean_data = set_default_values(data)
+    clean_data = set_default_values(data, config)
     clean_data[0][first_field].should.equal(first_expected)
     clean_data[1][second_field].should.equal(second_expected)
 

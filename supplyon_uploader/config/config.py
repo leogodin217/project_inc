@@ -1,13 +1,17 @@
 ''' Manages configuration environment  '''
 from pathlib import Path
 import json
+import sys
 
-def get_config():
+def get_config(path):
     '''
     Settings are configured in a config file that is one directory up from the
     base code directory. We need to understand the location of the CSV files
     and connection information for the SupplyOn portal. Settings are held in
     ../supply_on_config.json
+
+    Parameters:
+        path: pathlib.Path object with path to settings file
 
     Returns a dict with {
         'supplyon_url': 'URL to the SupplyOn web service',
@@ -25,10 +29,11 @@ def get_config():
     'SOAPAction': 'http://gateway.api.qas.supplyon.com/ProductionToSupply'
     '''
 
-    config_file = Path('..').absolute() /'config.json'
+    if not path.exists():
+        sys.exit(f'Invalid settings path {path.absolute()}')
 
     config = None
-    with open(config_file, 'r') as f:
+    with open(path, 'r') as f:
         config = json.load(f)
     
     return config
