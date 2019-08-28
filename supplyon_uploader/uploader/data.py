@@ -4,6 +4,7 @@ from zeep.plugins import HistoryPlugin
 import datetime
 import csv
 import sys
+from copy import deepcopy
 
 def get_data(file_path):
     '''
@@ -142,5 +143,46 @@ def validate_optional_fields(data):
         print(f'{key}: {valid_rows[0][key]}')
     return valid_rows
 
+def get_default_data(data_type):
+    '''
+    Returns a configured value from config.json for each supported data type
+
+    Parameters:
+        data_type: One of "string", "integer" or "date"
+    
+    Returns: The default_value for the data type
+    '''
+
+    config = get_config()
+
+    if 'default_values' not in config:
+        sys.exit('default_values missing from config.json')
+    if data_type not in config['default_values']:
+        sys.exit(f'Data type: {data_type} not configured in config.json')
+    
+    return config['default_values'][data_type]
+
+def set_default_values(data):
+    '''
+    Sets default values for any required fields that are missing values.
+
+    Parameters:
+        data: A list of dicts where each dict represents one row of data
+
+    Returns: A list of dicts with required missing fields filled in.
+    '''
+    # Ensure we do not overwrite original data
+    set_data = deepcopy(data)
+    config = get_config()
+    if 'mandatory_fields' not in config:
+        sys.exit('mandatory_fields is missing from config.json')
+    
+    mandatory_fields = config['mandatory_fields']
+    for row in set_data:
+        for field, data_type in mandatory_fields.items():
+            if row[field] is None:
+                row[field] = get_default_data(data_type) 
+
+    return set_data
 
         

@@ -2,6 +2,8 @@ from supplyon_uploader.uploader.data import get_data
 from supplyon_uploader.uploader.data import get_data_type
 from supplyon_uploader.uploader.data import validate_mandatory_fields
 from supplyon_uploader.uploader.data import validate_optional_fields
+from supplyon_uploader.uploader.data import get_default_data
+from supplyon_uploader.uploader.data import set_default_values
 from supplyon_uploader.config.config import get_config
 import datetime
 from pathlib import Path 
@@ -39,20 +41,6 @@ def test_get_data_invalid_descriptions_return_false():
 # Test mandatory fields and do a little setup.
 
 mandatory_fields = [key for key in config['mandatory_fields']]
-# mandatory_fields = [
-#     'Part_Material_Number_Buyer',
-#     'Vendor_Code_Buyer_Supplier_Reference',
-#     'Work_Production_Order_No_Supplier',
-#     'Planned_Production_Start_Date',
-#     'Planned_Production_End_Date',
-#     'Actual_Production_Start_Date',
-#     'Actual_Production_End_Date',
-#     'Planned_Production_Qty',
-#     'Actual_Start_Production_Qty',
-#     'Current_Work_Order_Qty',
-#     'Work_Order_Status',
-#     'Finished_Components_in_Storage_Qty']
-
 @pytest.fixture()
 def valid_record():
     record = {}
@@ -67,39 +55,8 @@ def valid_record():
             record[field] = datetime.datetime.now()
     return record
     
-# data = [
-#     {
-#         'Part_Material_Number_Buyer': 'string',
-#         'Vendor_Code_Buyer_Supplier_Reference': 'string',
-#         'Work_Production_Order_No_Supplier': 'string',
-#         'Planned_Production_Start_Date': datetime.datetime.now(),
-#         'Planned_Production_End_Date': datetime.datetime.now(),
-#         'Actual_Production_Start_Date': datetime.datetime.now(),
-#         'Actual_Production_End_Date': datetime.datetime.now(),
-#         'Planned_Production_Qty': 1,
-#         'Actual_Start_Production_Qty': 1,
-#         'Current_Work_Order_Qty': 1,
-#         'Work_Order_Status': 1,
-#         'Finished_Components_in_Storage_Qty': 1
-#     },
-#     {
-#         'Part_Material_Number_Buyer': 'string',
-#         'Vendor_Code_Buyer_Supplier_Reference': 'string',
-#         'Work_Production_Order_No_Supplier': 'string',
-#         'Planned_Production_Start_Date': datetime.datetime.now(),
-#         'Planned_Production_End_Date': datetime.datetime.now(),
-#         'Actual_Production_Start_Date': datetime.datetime.now(),
-#         'Actual_Production_End_Date': datetime.datetime.now(),
-#         'Planned_Production_Qty': 1,
-#         'Actual_Start_Production_Qty': 1,
-#         'Current_Work_Order_Qty': 1,
-#         'Work_Order_Status': 1,
-#         'Finished_Components_in_Storage_Qty': 1
-#     }
-# ]
-
 def test_validate_mandatory_fields_passes_valid_data(valid_record):
-    data = [valid_record, valid_record]
+    data = [deepcopy(valid_record), deepcopy(valid_record)]
     valid_data = validate_mandatory_fields(data)
     valid_data.should.be.a(list)
     valid_data[0].should.be.a(dict)
@@ -113,21 +70,21 @@ def test_validate_mandatory_fields_passes_valid_data(valid_record):
         valid_data[1][key].should.be.true
 
 def test_validate_mandatory_fields_fails_missing_field(valid_record):
-    missing_data =  [valid_record, valid_record]
+    missing_data =  [deepcopy(valid_record), deepcopy(valid_record)]
     missing_data[0].pop('Part_Material_Number_Buyer')
     valid_data = validate_mandatory_fields(missing_data)
     valid_data[0]['all_valid'].should.be.false
     valid_data[0]['Part_Material_Number_Buyer'].should.be.false
 
 def test_validate_mandatory_fields_fails_with_missing_data(valid_record):
-    missing_data = [valid_record, valid_record]
+    missing_data = [deepcopy(valid_record), deepcopy(valid_record)]
     missing_data[0]['Part_Material_Number_Buyer'] = None
     valid_data = validate_mandatory_fields(missing_data)
     valid_data[0]['all_valid'].should.be.false
     valid_data[0]['Part_Material_Number_Buyer'].should.be.false
 
 def test_validate_mandatory_fields_fails_wrong_type(valid_record):
-    missing_data = [valid_record, valid_record]
+    missing_data = [deepcopy(valid_record), deepcopy(valid_record)]
     # This should be a string
     missing_data[0]['Part_Material_Number_Buyer'] = 0 
     # This should be a datetime.datetime
@@ -141,22 +98,7 @@ def test_validate_mandatory_fields_fails_wrong_type(valid_record):
     valid_data[0]['Planned_Production_Start_Date'].should.be.false
     valid_data[0]['Actual_Start_Production_Qty'].should.be.false
 
-# optional_fields = [
-#     'Doc_Number_DemandReference_Buyer',
-#     'SchedLine',
-#     'Buyer_Plant_No',
-#     'Current_Production_Step',
-#     'TotalNumber_Production_Steps',
-#     'Production_Lead_Time',
-#     'Updated_Planned_Production_End_Date',
-#     'Actual_End_Production_Qty',
-#     'Finished_Components_in_Transit_Qty',
-#     'Supplier_Input_Material_Qty',
-#     'Supplier_Input_Material_on_Order_Qty',
-#     'Input_Material_Lead_Time_cal_days',
-#     'Input_Material_Order_Date',
-#     'Input_Material_Delivery_Date'
-# ]
+# Test optional fields
 optional_fields = [field for field in config['optional_fields']]
 @pytest.fixture()
 def optional_record():
@@ -172,40 +114,6 @@ def optional_record():
             record[field] = datetime.datetime.now()
     return record
 
-# optional_data = [
-#     {
-#         'Doc_Number_DemandReference_Buyer': 'string',
-#         'SchedLine': 'string',
-#         'Buyer_Plant_No': 'string',
-#         'Current_Production_Step': 1, 
-#         'TotalNumber_Production_Steps': 1,
-#         'Production_Lead_Time': 1,
-#         'Updated_Planned_Production_End_Date': datetime.datetime.now(),
-#         'Actual_End_Production_Qty': 1,
-#         'Finished_Components_in_Transit_Qty': 1,
-#         'Supplier_Input_Material_Qty': 1,
-#         'Supplier_Input_Material_on_Order_Qty': 1,
-#         'Input_Material_Lead_Time_cal_days': 1,
-#         'Input_Material_Order_Date': datetime.datetime.now(),
-#         'Input_Material_Delivery_Date': datetime.datetime.now()
-#     },
-#     {
-#         'Doc_Number_DemandReference_Buyer': 'string',
-#         'SchedLine': 'string',
-#         'Buyer_Plant_No': 'string',
-#         'Current_Production_Step': 1, 
-#         'TotalNumber_Production_Steps': 1,
-#         'Production_Lead_Time': 1,
-#         'Updated_Planned_Production_End_Date': datetime.datetime.now(),
-#         'Actual_End_Production_Qty': 1,
-#         'Finished_Components_in_Transit_Qty': 1,
-#         'Supplier_Input_Material_Qty': 1,
-#         'Supplier_Input_Material_on_Order_Qty': 1,
-#         'Input_Material_Lead_Time_cal_days': 1,
-#         'Input_Material_Order_Date': datetime.datetime.now(),
-#         'Input_Material_Delivery_Date': datetime.datetime.now()
-#     }
-# ]
 
 def test_validate_optional_fields_passes_valid_data(optional_record):
     valid_data = validate_optional_fields([optional_record, optional_record])
@@ -241,3 +149,24 @@ def test_validate_optional_fields_fails_with_incorrect_data_type(optional_record
     valid_data[0]['SchedLine'].should.be.false
     valid_data[0]['Input_Material_Lead_Time_cal_days'].should.be.false
     valid_data[0]['Input_Material_Order_Date'].should.be.false
+
+# Test utilities
+def test_get_default_data_returns_correct_type():
+    default_values = config['default_values']
+    for data_type, value in default_values.items():
+        get_default_data(data_type).should.be.a(type(value))
+
+def test_default_values_fills_in_missing_data(valid_record):
+    data = [deepcopy(valid_record), deepcopy(valid_record)]
+    first_field = mandatory_fields[0]
+    first_type = config['mandatory_fields'][first_field]
+    first_expected = config['default_values'][first_type]
+    data[0][first_field] = None
+    second_field = mandatory_fields[1]
+    second_type = config['mandatory_fields'][second_field]
+    second_expected = config['default_values'][second_type]
+    data[1][second_field] = None
+    clean_data = set_default_values(data)
+    clean_data[0][first_field].should.equal(first_expected)
+    clean_data[1][second_field].should.equal(second_expected)
+
