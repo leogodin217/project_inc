@@ -30,7 +30,7 @@ def test_mandatory_field_items_are_numeric_date_or_text():
         config = get_config()
         mandatory_fields = config['mandatory_fields']
         for key in mandatory_fields.keys():
-                mandatory_fields[key].should.be.within(["string", "integer", "date"])
+                mandatory_fields[key].should.be.within(['string', 'integer', 'date'])
 
 def test_optional_fields_is_dict():
         config = get_config()
@@ -41,4 +41,19 @@ def test_optional_field_items_are_numeric_or_text():
         config = get_config()
         optional_fields = config['optional_fields']
         for key in optional_fields.keys():
-                optional_fields[key].should.be.within(["string", "integer", "date"])
+                optional_fields[key].should.be.within(['string', 'integer', 'date'])
+
+def test_config_has_default_string():
+        config = get_config()
+        config.should.have.key('default_values')
+        config['default_values'].should.have.key('string')
+
+def test_config_has_default_integer():
+        config = get_config()
+        config.should.have.key('default_values')
+        config['default_values'].should.have.key('integer')
+
+def test_config_has_default_date():
+        config = get_config()
+        config.should.have.key('default_values')
+        config['default_values'].should.have.key('date')
