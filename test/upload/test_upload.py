@@ -59,6 +59,7 @@ def test_prepare_data_array_of_production_data_is_a_list_of_production_data(full
     prepared_data = prepare_data(data, config)
     data_list = prepared_data.ProductionData
     data_list.should.be.a(list)
+    str(type(data_list[0])).should.equal("<class 'zeep.objects.ProductionData'>")
     for key, value in data[0].items():
         data_list[0][key].should.equal(value)
         data_list[1][key].should.equal(value)
