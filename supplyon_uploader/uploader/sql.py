@@ -60,7 +60,8 @@ def save_query_data(query, config):
     odbc_connection = config['odbc_connection']
     conn = pyodbc.connect(odbc_connection)
     save_path = Path(config['save_dir'])
-    save_dir = save_path /'supplyon-' + str(datetime.datetime.now()) + '.csv'    
+    file_name = 'supplyon-' + str(datetime.datetime.now()) + '.csv'
+    save_file = save_path /file_name    
 
     try:
         data = pd.read_sql(conn)
