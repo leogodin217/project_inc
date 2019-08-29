@@ -2,6 +2,7 @@ from supplyon_uploader.uploader.upload import get_wsdl
 from supplyon_uploader.uploader.upload import get_client
 from supplyon_uploader.config.config import get_config
 from supplyon_uploader.uploader.upload import prepare_data
+from supplyon_uploader.uploader.upload import upload_data
 from pathlib import Path
 import string
 import random
@@ -65,4 +66,9 @@ def test_prepare_data_array_of_production_data_is_a_list_of_production_data(full
         data_list[1][key].should.equal(value)
 
 
+def test_upload_data_succeeds_with_good_data(full_record):
+    data = prepare_data([full_record, full_record], config)
+    client = get_client(config)
+    response = upload_data(data, client)  
+    response.should.equal('Success')
 

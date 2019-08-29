@@ -16,8 +16,7 @@ def get_wsdl(config):
     '''
     if "wsdl" not in config:
         sys.exit('wsdl is not defined in config.json') 
-    wsdl_dir = Path('.').absolute().parent
-    wsdl = wsdl_dir /config['wsdl']
+    wsdl = Path(config['wsdl']) 
     if not wsdl.exists():
         sys.exit(f'Wsdl does not exist {wsdl.absolute()}')
     print(Path('.').absolute())
@@ -65,3 +64,21 @@ def prepare_data(data, config):
         [ProductionData(**field) for field in data]
     )
     return production_data    
+
+def upload_data(data, client):
+    '''
+    Uploads data to the SupplyOn api
+
+    Parameters:
+        data: ArrayOfProductionData with one ProductionData for each row of
+              data. This should be prepared with prepare_data
+
+    returns: Status messge
+    '''
+    response = ''
+    try:
+        response = client.service.ProductionToSupply(ProductionDataList=data)
+    except Exception as e:
+        sys.exit(e.args)
+    return response
+

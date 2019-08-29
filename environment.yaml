@@ -1,0 +1,11 @@
+name: project_inc 
+channels:
+   - defaults
+   - conda-forge
+dependencies:
+   - pip
+   - pandas 
+   - pyodbc 
+   - zeep
+   - pip:
+     - "https://github.com/leogodin217/project_inc.git"
