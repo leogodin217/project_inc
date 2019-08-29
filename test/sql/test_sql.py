@@ -1,4 +1,9 @@
 from supplyon_uploader.uploader.sql import generate_query
+from supplyon_uploader.uploader.sql import save_query_data
+from pathlib import Path
+
+save_dir = Path('.').absolute().parent /'csv'
+
 
 config = {
     'mandatory_fields': {
@@ -12,7 +17,9 @@ config = {
         'field6': 'date'
     },
     'customers': ['cust1', 'cust2'],
-    'data_table': 'mytable'
+    'data_table': 'mytable',
+    'odbc_connection': "test",
+    'save_dir': save_dir
 }
 
 def test_generate_query_creates_the_query():
@@ -31,3 +38,7 @@ def test_generate_query_creates_the_query():
     expected_sql = '\n'.join(expected_sql_parts)
     print(expected_sql)
     sql.should.equal(expected_sql)
+
+def test_save_query_data_works():
+    sql = generate_query(config)
+    result = save_query_data(sql, config)
