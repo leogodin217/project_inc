@@ -59,12 +59,12 @@ def save_query_data(query, config):
 
     odbc_connection = config['odbc_connection']
     conn = pyodbc.connect(odbc_connection)
-    save_path = Path(config['save_dir'])
+    save_path = Path(config['save_dir']).absolute()
     file_name = 'supplyon-' + str(datetime.datetime.now()) + '.csv'
     save_file = save_path /file_name    
 
     try:
-        data = pd.read_sql(conn)
+        data = pd.read_sql(con=conn)
         data.to_csv(save_file)
     except Exception as e:
         sys.exit(e.args)
