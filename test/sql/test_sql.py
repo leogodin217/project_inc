@@ -1,8 +1,11 @@
 from supplyon_uploader.uploader.sql import generate_query
 from supplyon_uploader.uploader.sql import save_query_data
 from pathlib import Path
+import sqlite3
+import pandas as pd
 
 save_dir = Path('.').absolute().parent /'csv'
+sql_db = Path('.').absolute() /'test/data/test.db'
 
 
 config = {
@@ -17,9 +20,9 @@ config = {
         'field6': 'date'
     },
     'customers': ['cust1', 'cust2'],
-    'data_table': 'mytable',
-    'odbc_connection': "test",
-    'save_dir': save_dir
+    'data_table': 'supplyon',
+    'odbc_connection': f'Driver=SQLite3 ODBC Driver;Database={sql_db}',
+    'save_dir': save_dir.as_posix() 
 }
 
 def test_generate_query_creates_the_query():
@@ -32,7 +35,7 @@ def test_generate_query_creates_the_query():
         '    field4,',
         '    field5,',
         '    field6',
-        'from mytable',
+        'from supplyon',
         "where customer_id in ('cust1', 'cust2')"
     ]
     expected_sql = '\n'.join(expected_sql_parts)
@@ -40,5 +43,20 @@ def test_generate_query_creates_the_query():
     sql.should.equal(expected_sql)
 
 def test_save_query_data_works():
-    sql = generate_query(config)
+    # test.db is created in test/data/test.db
+    # It contains two rows for id, name
+    # [('test1', 1, datetime.datetime(2019, 1, 1, 0, 0), 'test1', 1, datetime.datetime(2019, 1, 1, 0, 0), 'cust1'),
+    # ('test2', 2, datetime.datetime(2019, 1, 1, 0, 0), 'test2', 2, datetime.datetime(2019, 1, 1, 0, 0), 'cust2')]"
+    sql = 'select * from supplyon'
     result = save_query_data(sql, config)
+
+    data = pd.read_csv(result)
+    data.shape.should.equal((2, 7))
+    data.columns.should.contain('field1')
+    data.columns.should.contain('field2')
+    data.columns.should.contain('field3')
+    data.columns.should.contain('field4')
+    data.columns.should.contain('field5')
+    data.columns.should.contain('field6')
+    data.columns.should.contain('customer_id')
+    data.columns.should_not.contain('id')

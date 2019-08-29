@@ -24,7 +24,8 @@ def test_wsdl_path_returns_wsdl_one_directory_up():
 def test_get_client():
     client = get_client(config)
     response = client.service.ProductionToSupply()
-    response.should.equal('ProductionDataList is empty.')
+    # response.should.equal('ProductionDataList is empty.')
+    response.startswith('ProductionDataList is empty').should.be.true
 
     
 @pytest.fixture()
