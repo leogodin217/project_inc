@@ -64,7 +64,7 @@ def save_query_data(query, config):
     save_file = save_path /file_name    
 
     try:
-        data = pd.read_sql(con=conn, sql=query))
+        data = pd.read_sql(con=conn, sql=query)
         data.to_csv(save_file)
     except Exception as e:
         sys.exit(e.args)
