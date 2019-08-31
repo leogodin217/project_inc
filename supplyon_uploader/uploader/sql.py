@@ -136,6 +136,6 @@ def run_stored_procedure(config):
     conn = pyodbc.connect(odbc_connection)
     success = True
     try:
-        conn.execute('{call dbo.get_supply_on_data_all_customers ()}', min_date)
+        conn.execute('{call dbo.get_supply_on_data_all_customers (?)}', min_date)
     except Exception as e:
         sys.exit(e.args)
