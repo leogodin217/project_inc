@@ -19,8 +19,6 @@ def get_wsdl(config):
     wsdl = Path(config['wsdl']) 
     if not wsdl.exists():
         sys.exit(f'Wsdl does not exist {wsdl.absolute()}')
-    print(Path('.').absolute())
-    print(wsdl.as_posix())
     return wsdl.as_posix()
 
 def get_client(config):
@@ -35,7 +33,6 @@ def get_client(config):
     if 'supplyon_headers' not in config:
         sys.exit('supplyon_headers not configured in config.json')
     headers = config['supplyon_headers']
-    print(headers)
     wsdl = get_wsdl(config)
     settings = Settings(extra_http_headers=headers)
     client = Client(wsdl=wsdl, settings=settings)
