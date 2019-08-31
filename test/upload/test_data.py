@@ -4,6 +4,7 @@ from supplyon_uploader.uploader.data import validate_mandatory_fields
 from supplyon_uploader.uploader.data import validate_optional_fields
 from supplyon_uploader.uploader.data import get_default_data
 from supplyon_uploader.uploader.data import set_default_values
+from supplyon_uploader.uploader.data import fill_missing_values
 from supplyon_uploader.config.config import get_config
 import datetime
 from pathlib import Path 
@@ -171,3 +172,15 @@ def test_default_values_fills_in_missing_data(valid_record):
     clean_data[0][first_field].should.equal(first_expected)
     clean_data[1][second_field].should.equal(second_expected)
 
+def test_fill_missing_values_replaces_empty_strings_with_none():
+    data = [
+        {'foo': '', 'bar': 'bar'},
+        {'foo': 'foo', 'bar': ''}
+    ]
+
+    none_data = fill_missing_values(data)
+    
+    none_data[0]['foo'].should.equal(None)
+    none_data[0]['bar'].should.equal('bar')
+    none_data[1]['foo'].should.equal('foo')
+    none_data[1]['bar'].should.equal(None)

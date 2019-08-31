@@ -185,4 +185,22 @@ def set_default_values(data, config):
 
     return set_data
 
-        
+def fill_missing_values(data):
+    '''
+    replaces empty strings with None
+
+    Parameters:
+        data: A list of dicts where each dict represents one row of data
+
+    Returns: A new list of dicts with empty strings replaced with None
+    '''
+    # Ensure we do not modify the original data
+    none_data = deepcopy(data)
+
+    for row in none_data:
+        for field, value in row.items():
+            if value == '':
+                row[field] = None
+                print(row)
+    
+    return none_data

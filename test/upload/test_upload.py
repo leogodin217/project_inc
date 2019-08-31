@@ -69,6 +69,7 @@ def test_prepare_data_array_of_production_data_is_a_list_of_production_data(full
 
 def test_upload_data_succeeds_with_good_data(full_record):
     data = prepare_data([full_record, full_record], config)
+    print(data)
     client = get_client(config)
     response = upload_data(data, client)  
     response.should.equal('Success')
