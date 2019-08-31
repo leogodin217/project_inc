@@ -75,6 +75,8 @@ def upload_data(data, client):
     response = ''
     try:
         response = client.service.ProductionToSupply(ProductionDataList=data)
+        if response != 'Success':
+            sys.exit(f'Error occurred: {response}')
     except Exception as e:
         sys.exit(e.args)
     return response
