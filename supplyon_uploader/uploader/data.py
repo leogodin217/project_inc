@@ -139,8 +139,8 @@ def validate_optional_fields(data, config):
 
             row_validity['all_valid'] = all_valid
             valid_rows.append(row_validity)
-    for key in valid_rows[0]:
-        print(f'{key}: {valid_rows[0][key]}')
+    # for key in valid_rows[0]:
+        # print(f'{key}: {valid_rows[0][key]}')
     return valid_rows
 
 def get_default_data(data_type, config):
@@ -201,6 +201,4 @@ def fill_missing_values(data):
         for field, value in row.items():
             if value == '':
                 row[field] = None
-                print(row)
-    
     return none_data
