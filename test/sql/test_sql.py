@@ -36,7 +36,10 @@ def test_generate_query_creates_the_query():
         '    field5,',
         '    field6',
         'from supplyon',
-        "where customer_id in ('cust1', 'cust2')"
+        "where customer_id in ('cust1', 'cust2')",
+        'and Work_Production_Order_No_Supplier is not null',
+        'and Vendor_Code_Buyer_Suplier_Reference is not null',
+        'and Part_Material_Number_Buyer is not null'
     ]
     expected_sql = '\n'.join(expected_sql_parts)
     print(expected_sql)

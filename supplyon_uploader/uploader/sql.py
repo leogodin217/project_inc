@@ -39,6 +39,14 @@ def generate_query(config):
     query += "\nwhere customer_id in ('"
     customers = "', '".join(config['customers'])
     query += customers + "')"
+    needed_fields = [
+        'and Work_Production_Order_No_Supplier is not null',
+        'and Vendor_Code_Buyer_Suplier_Reference is not null',
+        'and Part_Material_Number_Buyer is not null'
+    ]
+    query += '\n'
+    query += '\n'.join(needed_fields)
+
     return query
 
 def save_query_data(query, config):
