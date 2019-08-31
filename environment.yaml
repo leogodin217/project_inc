@@ -8,4 +8,4 @@ dependencies:
    - pyodbc 
    - zeep
    - pip:
-     - "https://github.com/leogodin217/project_inc.git"
+     - "git+https://github.com/leogodin217/project_inc.git"
