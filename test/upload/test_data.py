@@ -5,6 +5,7 @@ from supplyon_uploader.uploader.data import validate_optional_fields
 from supplyon_uploader.uploader.data import get_default_data
 from supplyon_uploader.uploader.data import set_default_values
 from supplyon_uploader.uploader.data import fill_missing_values
+from supplyon_uploader.uploader.data import set_data_types
 from supplyon_uploader.config.config import get_config
 import datetime
 from pathlib import Path 
@@ -163,11 +164,11 @@ def test_default_values_fills_in_missing_data(valid_record):
     first_field = mandatory_fields[0]
     first_type = config['mandatory_fields'][first_field]
     first_expected = config['default_values'][first_type]
-    data[0][first_field] = None
+    data[0][first_field] = '' 
     second_field = mandatory_fields[1]
     second_type = config['mandatory_fields'][second_field]
     second_expected = config['default_values'][second_type]
-    data[1][second_field] = None
+    data[1][second_field] = '' 
     clean_data = set_default_values(data, config)
     clean_data[0][first_field].should.equal(first_expected)
     clean_data[1][second_field].should.equal(second_expected)
@@ -184,3 +185,77 @@ def test_fill_missing_values_replaces_empty_strings_with_none():
     none_data[0]['bar'].should.equal('bar')
     none_data[1]['foo'].should.equal('foo')
     none_data[1]['bar'].should.equal(None)
+
+def test_set_data_types_handles_integers_and_dates():
+    data = [
+        { 
+            "Part_Material_Number_Buyer": "string",
+            "Vendor_Code_Buyer_Supplier_Reference": "string",
+            "Work_Production_Order_No_Supplier": "string",
+            "Planned_Production_Start_Date": "2019-02-07T12:15:56",
+            "Planned_Production_End_Date": "2019-02-07T12:15:56",
+            "Planned_Production_Qty": "5.0",
+            "Actual_Start_Production_Qty": "5.0",
+            "Actual_End_Production_Qty": "5",
+            "Work_Order_Status": "string",
+            "Finished_Components_in_Storage_Qty": "5", 
+            "Doc_Number_DemandReference_Buyer": "string",
+            "SchedLine": "string",
+            "Buyer_Plant_No": "string",
+            "Assembly_Work_Order_Reference": "string",
+            "Work_Order_Category": "string",
+            "Current_Production_Step": "5.0",
+            "TotalNumber_Production_Steps": "5.0",
+            "Production_Lead_Time": "5.0",
+            "Updated_Planned_Production_End_Date": "2019-02-07T12:15:56",
+            "Actual_Production_Start_Date": "2019-02-07T12:15:56",
+            "Actual_Production_End_Date": "2019-02-07T12:15:56",
+            "Current_Work_Order_Qty": "5.0",
+            "Finished_Components_in_Transit_Qty": "5.0",
+            "Supplier_Input_Material_Qty": "5.0",
+            "Supplier_Input_Material_on_Order_Qty": "5.0",
+            "Input_Material_Lead_Time_cal_days": "5.0",
+            "Input_Material_Order_Date": "2019-02-07T12:15:56",
+            "Input_Material_Delivery_Date": "2019-02-07T12:15:56"
+        },
+        { 
+            "Part_Material_Number_Buyer": "string",
+            "Vendor_Code_Buyer_Supplier_Reference": "string",
+            "Work_Production_Order_No_Supplier": "string",
+            "Planned_Production_Start_Date": "2019-02-07T12:15:56",
+            "Planned_Production_End_Date": "2019-02-07T12:15:56",
+            "Planned_Production_Qty": "5.0",
+            "Actual_Start_Production_Qty": "5.0",
+            "Actual_End_Production_Qty": "5",
+            "Work_Order_Status": "string",
+            "Finished_Components_in_Storage_Qty": "5", 
+            "Doc_Number_DemandReference_Buyer": "string",
+            "SchedLine": "string",
+            "Buyer_Plant_No": "string",
+            "Assembly_Work_Order_Reference": "string",
+            "Work_Order_Category": "string",
+            "Current_Production_Step": "5.0",
+            "TotalNumber_Production_Steps": "5.0",
+            "Production_Lead_Time": "5.0",
+            "Updated_Planned_Production_End_Date": "2019-02-07T12:15:56",
+            "Actual_Production_Start_Date": "2019-02-07T12:15:56",
+            "Actual_Production_End_Date": "2019-02-07T12:15:56",
+            "Current_Work_Order_Qty": "5.0",
+            "Finished_Components_in_Transit_Qty": "5.0",
+            "Supplier_Input_Material_Qty": "5.0",
+            "Supplier_Input_Material_on_Order_Qty": "5.0",
+            "Input_Material_Lead_Time_cal_days": "5.0",
+            "Input_Material_Order_Date": "2019-02-07T12:15:56",
+            "Input_Material_Delivery_Date": "2019-02-07T12:15:56"
+        }  
+    ]
+
+    type_data = set_data_types(data, config)
+    type_data[0]['Planned_Production_Start_Date'].date().should.equal(datetime.date(2019, 2, 7))
+    type_data[1]['Planned_Production_Start_Date'].date().should.equal(datetime.date(2019, 2, 7))
+    type_data[0]['Updated_Planned_Production_End_Date'].date().should.equal(datetime.date(2019, 2, 7))
+    type_data[1]['Updated_Planned_Production_End_Date'].date().should.equal(datetime.date(2019, 2, 7))
+    type_data[0]['Planned_Production_Qty'].should.equal(5)
+    type_data[1]['Planned_Production_Qty'].should.equal(5)
+    type_data[0]['Finished_Components_in_Transit_Qty'].should.equal(5)
+    type_data[1]['Finished_Components_in_Transit_Qty'].should.equal(5)

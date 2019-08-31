@@ -180,7 +180,7 @@ def set_default_values(data, config):
     mandatory_fields = config['mandatory_fields']
     for row in set_data:
         for field, data_type in mandatory_fields.items():
-            if row[field] is None:
+            if row[field] == '':
                 row[field] = get_default_data(data_type, config) 
 
     return set_data
@@ -202,3 +202,34 @@ def fill_missing_values(data):
             if value == '':
                 row[field] = None
     return none_data
+
+def set_data_types(data, config):
+    '''
+    Sets datetime and integer types for fields of those types. This is needed
+    to ensure the correct data type of data read from a CSV file. While other
+    options exist. This gives us the most control. 
+
+    Always run this after set_default_values and fill_missing_values.
+
+    Parameters:
+        data: A list of dicts where each dict represents one row of data
+        config: A dict with configuration parameters from config.json
+
+    Returns: A list of dicts where each dict represents one row of data
+    '''
+    type_data = deepcopy(data)
+
+    # This works on all fields, so we need a dict for all of them. 
+    fields = {}
+    fields.update(config['mandatory_fields'])
+    fields.update(config['optional_fields'])
+
+    for row in type_data:
+        for field, value in row.items():
+            # Handle integers, skipping none values
+            if value is not None and fields[field] == 'integer':
+                row[field] = int(float(row[field]))
+            # Handle dates, skipping None values
+            if value is not None and fields[field] == 'date':
+                row[field] = datetime.datetime.fromisoformat(row[field]) 
+    return type_data
