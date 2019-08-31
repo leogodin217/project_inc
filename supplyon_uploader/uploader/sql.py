@@ -128,7 +128,7 @@ def run_stored_procedure(config):
         sys.exit('min_date missing from configuration')
     min_date = None
     try:
-        min_date = datetime.datetim.fromisoformat(config['min_date'])    
+        min_date = datetime.datetime.fromisoformat(config['min_date'])    
     except Exception as e:
         sys.exit('Could not convert min_date to datetime')
 
