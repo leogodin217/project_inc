@@ -39,14 +39,25 @@ def generate_query(config):
     query += "\nwhere customer_id in ('"
     customers = "', '".join(config['customers'])
     query += customers + "')"
-    needed_fields = [
-        'and Work_Production_Order_No_Supplier is not null',
-        'and Vendor_Code_Buyer_Suplier_Reference is not null',
-        'and Part_Material_Number_Buyer is not null'
-    ]
-    query += '\n'
-    query += '\n'.join(needed_fields)
 
+    return query
+
+def generate_bad_data_query(config):
+    '''
+    Bad data does not have one of "needed_fields" in the config. This data 
+    cannot be updated
+
+    Params:
+        config: Dict containing configuraiton from config.json
+    
+    Returns: String representing the query
+    '''
+    if 'needed_fields' not in config:
+        sys.exit('needed_fields not in configuration')
+    query = generate_query(config) 
+    for field in config['needed_fields']:
+        query += f'\nand {field} is not null'
+    print(query)
     return query
 
 def save_query_data(query, config):
@@ -79,4 +90,30 @@ def save_query_data(query, config):
         sys.exit(e.args)
     return save_file 
 
-    
+def save_bad_data(query, config):
+    '''
+    Saves bad data to a temp table for later email. Bad data are records that
+    have null values for any of the needed_fields in the config
+
+    Parameters:
+        query: String representing the query to use for bad data
+        config: Dict with configuraiton information from config.json
+        returns: Bool indicating success or failure
+    '''
+
+    if 'odbc_connection' not in config:
+        sys.exit('odbc_connection missing from config.json')
+    if 'bad_data_table' not in config:
+        sys.exit('bad_data_table missing from config.json')
+    bad_data_table = config['bad_data_table']
+    odbc_connection = config['odbc_connection']
+    conn = pyodbc.connect(odbc_connection)
+    success = True
+    drop_query = f'drop table if exists {bad_data_table}'
+    full_query = f'select * into {bad_data_table} from {query}'
+    try:
+        conn.execute(drop_query)
+        conn.execute(full_query)
+    except:
+        sys.exit(e.args)
+    return success 

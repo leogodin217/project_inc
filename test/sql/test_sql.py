@@ -1,5 +1,6 @@
 from supplyon_uploader.uploader.sql import generate_query
 from supplyon_uploader.uploader.sql import save_query_data
+from supplyon_uploader.uploader.sql import generate_bad_data_query
 from pathlib import Path
 import sqlite3
 import pandas as pd
@@ -22,7 +23,8 @@ config = {
     'customers': ['cust1', 'cust2'],
     'data_table': 'supplyon',
     'odbc_connection': f'Driver=SQLite3 ODBC Driver;Database={sql_db}',
-    'save_dir': save_dir.as_posix() 
+    'save_dir': save_dir.as_posix(),
+    'needed_fields': ['field1', 'field2']
 }
 
 def test_generate_query_creates_the_query():
@@ -36,14 +38,19 @@ def test_generate_query_creates_the_query():
         '    field5,',
         '    field6',
         'from supplyon',
-        "where customer_id in ('cust1', 'cust2')",
-        'and Work_Production_Order_No_Supplier is not null',
-        'and Vendor_Code_Buyer_Suplier_Reference is not null',
-        'and Part_Material_Number_Buyer is not null'
+        "where customer_id in ('cust1', 'cust2')"
     ]
     expected_sql = '\n'.join(expected_sql_parts)
     print(expected_sql)
     sql.should.equal(expected_sql)
+
+def test_generate_bad_data_query_appends_needed_fields_in_the_query():
+    query = generate_query(config)
+    bad_query = generate_bad_data_query(config)
+    (query in bad_query).should.be.true
+    ('and field1 is not null' in bad_query).should.be.true
+    ('and field2 is not null' in bad_query).should.be.true
+
 
 def test_save_query_data_works():
     # test.db is created in test/data/test.db
