@@ -112,3 +112,30 @@ def save_bad_data(query, config):
     except:
         sys.exit(e.args)
     return success 
+
+def run_stored_procedure(config):
+    '''
+    Runs the main stored procedure to gather data
+
+    Parameters:
+        config: Dict containing configuration inforamtion from config.json
+    
+    Returns: Bool indicating success or failure
+    '''
+    if 'odbc_connection' not in config:
+        sys.exit('odbc_connection missing from config.json')
+    if 'min_date' not in config:
+        sys.exit('min_date missing from configuration')
+    min_date = None
+    try:
+        min_date = datetime.datetim.fromisoformat(config['min_date'])    
+    except Exception as e:
+        sys.exit('Could not convert min_date to datetime')
+
+    odbc_connection = config['odbc_connection']
+    conn = pyodbc.connect(odbc_connection)
+    success = True
+    try:
+        conn.execute('{call dbo.get_supply_on_data_all_customers ()}', min_date)
+    except Exception as e:
+        sys.exit(e.args)

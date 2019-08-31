@@ -69,3 +69,8 @@ def test_config_has_odbc_connection_info():
         config = get_config(config_path)
         config.should.have.key('odbc_connection')
         config['odbc_connection'].should.be.a(str)
+
+def test_config_has_min_date():
+        config = get_config(config_path)
+        config.should.have.key('min_date')
+        config['min_date'].should.be.a(str)
