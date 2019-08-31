@@ -21,7 +21,6 @@ config = {
         'field6': 'date'
     },
     'customers': ['cust1', 'cust2'],
-    'data_table': 'supplyon',
     'odbc_connection': f'Driver=SQLite3 ODBC Driver;Database={sql_db}',
     'save_dir': save_dir.as_posix(),
     'needed_fields': ['field1', 'field2']
@@ -37,7 +36,7 @@ def test_generate_query_creates_the_query():
         '    field4,',
         '    field5,',
         '    field6',
-        'from supplyon',
+        'from ##supply_on_data_all_customers',
         "where customer_id in ('cust1', 'cust2')"
     ]
     expected_sql = '\n'.join(expected_sql_parts)

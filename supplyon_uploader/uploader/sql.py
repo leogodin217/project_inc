@@ -22,8 +22,6 @@ def generate_query(config):
         sys.exit('optional_fields not in configuration')
     if 'customers' not in config:
         sys.exit('customers not in configuration')
-    if 'data_table' not in config:
-        sys.exit('data_table not in configuration')
 
     query = 'select\n' 
     select_parts = []
@@ -34,7 +32,7 @@ def generate_query(config):
         select_parts.append('    ' + key)
     query += ',\n'.join(select_parts)
     # Add the table
-    query += f'\nfrom {config["data_table"]}'
+    query += f'\nfrom ##supply_on_data_all_customers'
     # Add the where clause
     query += "\nwhere customer_id in ('"
     customers = "', '".join(config['customers'])
@@ -103,14 +101,11 @@ def save_bad_data(query, config):
 
     if 'odbc_connection' not in config:
         sys.exit('odbc_connection missing from config.json')
-    if 'bad_data_table' not in config:
-        sys.exit('bad_data_table missing from config.json')
-    bad_data_table = config['bad_data_table']
     odbc_connection = config['odbc_connection']
     conn = pyodbc.connect(odbc_connection)
     success = True
-    drop_query = f'drop table if exists {bad_data_table}'
-    full_query = f'select * into {bad_data_table} from {query}'
+    drop_query = f'drop table if exists ##supply_on_data_bad_data'
+    full_query = f'select * into  ##supply_on_data_bad_data from ({query}) as data'
     try:
         conn.execute(drop_query)
         conn.execute(full_query)
