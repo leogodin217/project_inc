@@ -32,7 +32,7 @@ def generate_query(config):
         select_parts.append('    ' + key)
     query += ',\n'.join(select_parts)
     # Add the table
-    query += f'\nfrom ##supplyon_data_all_customers_needs_update'
+    query += f'\nfrom dbo.supplyon_data_all_customers_needs_update'
     # Add the where clause
     query += "\nwhere customer_id in ('"
     customers = "', '".join(config['customers'])
@@ -104,8 +104,8 @@ def save_bad_data(query, config):
     odbc_connection = config['odbc_connection']
     conn = pyodbc.connect(odbc_connection)
     success = True
-    drop_query = f'drop table if exists ##supply_on_data_bad_data'
-    full_query = f'select * into  ##supply_on_data_bad_data from ({query}) as data'
+    drop_query = f'drop table if exists dbo.supply_on_data_bad_data'
+    full_query = f'select * into  dbo.supply_on_data_bad_data from ({query}) as data'
     try:
         conn.execute(drop_query)
         conn.execute(full_query)
