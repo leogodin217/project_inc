@@ -52,10 +52,21 @@ def generate_bad_data_query(config):
     '''
     if 'needed_fields' not in config:
         sys.exit('needed_fields not in configuration')
-    query = generate_query(config) 
-    for field in config['needed_fields']:
-        query += f'\nand {field} is not null'
-    print(query)
+    query = 'select\n' 
+    select_parts = []
+    # Append the fields prepended with four spaces for formatting
+    for key in config['needed_fields']:
+        select_parts.append('    ' + key)
+    query += ',\n'.join(select_parts)
+    # Add the table
+    query += f'\nfrom dbo.supplyon_data_all_customers_needs_update'
+    # Add the where clause
+    query += "\nwhere customer_id in ('"
+    customers = "', '".join(config['customers'])
+    query += customers + "')"
+    # Append the where clause
+    for key in config['needed_fields']:
+        query += f'\nand {key} is not null'
     return query
 
 def save_query_data(query, config):

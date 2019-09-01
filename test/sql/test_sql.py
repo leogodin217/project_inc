@@ -44,12 +44,18 @@ def test_generate_query_creates_the_query():
     sql.should.equal(expected_sql)
 
 def test_generate_bad_data_query_appends_needed_fields_in_the_query():
-    query = generate_query(config)
-    bad_query = generate_bad_data_query(config)
-    (query in bad_query).should.be.true
-    ('and field1 is not null' in bad_query).should.be.true
-    ('and field2 is not null' in bad_query).should.be.true
-
+    query_parts = [
+        'select',
+        '    field1,',
+        '    field2',
+        'from dbo.supplyon_data_all_customers_needs_update',
+        "where customer_id in ('cust1', 'cust2')",
+        'and field1 is not null',
+        'and field2 is not null'    
+    ]
+    expected_query = '\n'.join(query_parts)
+    query = generate_bad_data_query(config)
+    query.should.equal(expected_query)
 
 def test_save_query_data_works():
     # test.db is created in test/data/test.db
