@@ -32,7 +32,7 @@ def generate_query(config):
         select_parts.append('    ' + key)
     query += ',\n'.join(select_parts)
     # Add the table
-    query += f'\nfrom ##supply_on_data_all_customers'
+    query += f'\nfrom ##supplyon_data_all_customers_needs_update'
     # Add the where clause
     query += "\nwhere customer_id in ('"
     customers = "', '".join(config['customers'])

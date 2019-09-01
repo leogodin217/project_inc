@@ -36,7 +36,7 @@ def test_generate_query_creates_the_query():
         '    field4,',
         '    field5,',
         '    field6',
-        'from ##supply_on_data_all_customers',
+        'from ##supplyon_data_all_customers_needs_update',
         "where customer_id in ('cust1', 'cust2')"
     ]
     expected_sql = '\n'.join(expected_sql_parts)
