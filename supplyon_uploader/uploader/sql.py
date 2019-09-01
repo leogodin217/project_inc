@@ -21,6 +21,8 @@ def generate_query(config):
         sys.exit('mandatory_fields not in configuration')
     if 'optional_fields' not in config:
         sys.exit('optional_fields not in configuration')
+    if 'needed_fields' not in config:
+        sys.exit('needed_fields not in configuration')
     if 'customers' not in config:
         sys.exit('customers not in configuration')
 
@@ -38,7 +40,9 @@ def generate_query(config):
     query += "\nwhere customer_id in ('"
     customers = "', '".join(config['customers'])
     query += customers + "')"
-
+    # Require something in the needed fields
+    for key in config['needed_fields']:
+        query += f'\nand {key} is not null'
     return query
 
 def generate_bad_data_query(config):

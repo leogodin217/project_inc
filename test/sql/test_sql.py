@@ -37,10 +37,11 @@ def test_generate_query_creates_the_query():
         '    field5,',
         '    field6',
         'from dbo.supplyon_data_all_customers_needs_update',
-        "where customer_id in ('cust1', 'cust2')"
+        "where customer_id in ('cust1', 'cust2')",
+        'and field1 is not null',
+        'and field2 is not null'
     ]
     expected_sql = '\n'.join(expected_sql_parts)
-    print(expected_sql)
     sql.should.equal(expected_sql)
 
 def test_generate_bad_data_query_appends_needed_fields_in_the_query():
