@@ -46,6 +46,7 @@ def test_generate_query_creates_the_query():
 def test_generate_bad_data_query_appends_needed_fields_in_the_query():
     query_parts = [
         'select',
+        '    customer_id,',
         '    field1,',
         '    field2',
         'from dbo.supplyon_data_all_customers_needs_update',

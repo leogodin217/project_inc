@@ -53,7 +53,7 @@ def generate_bad_data_query(config):
     if 'needed_fields' not in config:
         sys.exit('needed_fields not in configuration')
     query = 'select\n' 
-    select_parts = []
+    select_parts = ['    customer_id']
     # Append the fields prepended with four spaces for formatting
     for key in config['needed_fields']:
         select_parts.append('    ' + key)
