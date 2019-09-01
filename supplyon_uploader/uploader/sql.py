@@ -66,7 +66,7 @@ def generate_bad_data_query(config):
     query += customers + "')"
     # Append the where clause
     for key in config['needed_fields']:
-        query += f'\nand {key} is not null'
+        query += f'\nor {key} is null'
     return query
 
 def save_query_data(query, config):
