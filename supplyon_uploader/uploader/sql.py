@@ -4,6 +4,7 @@ import pandas as pd
 import pyodbc
 from pathlib import Path
 import datetime
+from copy import deepcopy
 
 def generate_query(config):
     '''
@@ -52,10 +53,11 @@ def generate_bad_data_query(config):
     '''
     if 'needed_fields' not in config:
         sys.exit('needed_fields not in configuration')
+    needed_fields = deepcopy(config['needed_fields'])
     query = 'select\n' 
     select_parts = ['    customer_id']
     # Append the fields prepended with four spaces for formatting
-    for key in config['needed_fields']:
+    for key in needed_fields:
         select_parts.append('    ' + key)
     query += ',\n'.join(select_parts)
     # Add the table
@@ -65,8 +67,13 @@ def generate_bad_data_query(config):
     customers = "', '".join(config['customers'])
     query += customers + "')"
     # Append the where clause
-    for key in config['needed_fields']:
+    # We want the first field to set up this clause
+    needed_fields.reverse()
+    first_needed_field = needed_fields.pop()
+    query += f'\nand ({first_needed_field} is null'
+    for key in needed_fields:
         query += f'\nor {key} is null'
+    query += ')'
     return query
 
 def save_query_data(query, config):

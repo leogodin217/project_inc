@@ -51,8 +51,8 @@ def test_generate_bad_data_query_appends_needed_fields_in_the_query():
         '    field2',
         'from dbo.supplyon_data_all_customers_needs_update',
         "where customer_id in ('cust1', 'cust2')",
-        'or field1 is null',
-        'or field2 is null'    
+        'and (field1 is null',
+        'or field2 is null)'    
     ]
     expected_query = '\n'.join(query_parts)
     query = generate_bad_data_query(config)
