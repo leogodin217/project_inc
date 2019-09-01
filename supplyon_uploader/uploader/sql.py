@@ -136,7 +136,7 @@ def run_stored_procedure(config):
         sys.exit('Could not convert min_date to datetime')
 
     odbc_connection = config['odbc_connection']
-    conn = pyodbc.connect(odbc_connection)
+    conn = pyodbc.connect(odbc_connection, autocommit=True)
     success = True
     try:
         result = conn.execute('{call dbo.get_supply_on_data_all_customers (?)}', min_date)
