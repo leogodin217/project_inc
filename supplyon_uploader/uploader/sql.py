@@ -105,7 +105,7 @@ def save_bad_data(query, config):
     conn = pyodbc.connect(odbc_connection)
     success = True
     drop_query = f'truncate table dbo.supply_on_data_bad_data'
-    full_query = f'insert into dbo.supply_on_bad_data  {query} as data'
+    full_query = f'insert into dbo.supplyon_bad_data  {query} as data'
     try:
         conn.execute(drop_query)
         conn.execute(full_query)
