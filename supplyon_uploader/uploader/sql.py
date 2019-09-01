@@ -104,11 +104,12 @@ def save_bad_data(query, config):
     odbc_connection = config['odbc_connection']
     conn = pyodbc.connect(odbc_connection)
     success = True
-    drop_query = f'drop table if exists dbo.supply_on_data_bad_data'
-    full_query = f'select * into  dbo.supply_on_data_bad_data from ({query}) as data'
+    drop_query = f'truncate table dbo.supply_on_data_bad_data'
+    full_query = f'insert into dbo.supply_on_bad_data  {query} as data'
     try:
         conn.execute(drop_query)
         conn.execute(full_query)
+        conn.close()
     except:
         sys.exit(e.args)
     return success 
@@ -137,5 +138,6 @@ def run_stored_procedure(config):
     success = True
     try:
         conn.execute('{call dbo.get_supply_on_data_all_customers (?)}', min_date)
+        conn.close()
     except Exception as e:
         sys.exit(e.args)
