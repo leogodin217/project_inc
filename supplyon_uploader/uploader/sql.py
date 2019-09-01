@@ -75,7 +75,7 @@ def save_query_data(query, config):
         sys.exit('save_dir missing from config.json')
 
     odbc_connection = config['odbc_connection']
-    conn = pyodbc.connect(odbc_connection)
+    conn = pyodbc.connect(odbc_connection, autocommit=True)
     save_path = Path(config['save_dir']).absolute()
     save_path.mkdir(exist_ok=True)
     file_name = 'supplyon-' + str(datetime.datetime.now().timestamp()) + '.csv'
@@ -102,7 +102,7 @@ def save_bad_data(query, config):
     if 'odbc_connection' not in config:
         sys.exit('odbc_connection missing from config.json')
     odbc_connection = config['odbc_connection']
-    conn = pyodbc.connect(odbc_connection)
+    conn = pyodbc.connect(odbc_connection, autocommit=True)
     success = True
     drop_query = f'truncate table dbo.supply_on_data_bad_data'
     full_query = f'insert into dbo.supplyon_bad_data  {query} as data'
