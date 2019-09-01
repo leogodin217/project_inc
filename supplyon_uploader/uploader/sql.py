@@ -54,7 +54,7 @@ def generate_bad_data_query(config):
     if 'needed_fields' not in config:
         sys.exit('needed_fields not in configuration')
     needed_fields = deepcopy(config['needed_fields'])
-    query = 'select\n' 
+    query = 'insert into dbo.supplyon_bad_data\nselect\n' 
     select_parts = ['    customer_id']
     # Append the fields prepended with four spaces for formatting
     for key in needed_fields:
@@ -122,7 +122,7 @@ def save_bad_data(query, config):
     odbc_connection = config['odbc_connection']
     conn = pyodbc.connect(odbc_connection, autocommit=True)
     success = True
-    drop_query = f'truncate table dbo.supply_on_data_bad_data'
+    drop_query = f'truncate table dbo.supplyon_bad_data'
     full_query = f'insert into dbo.supplyon_bad_data  {query} as data'
     try:
         result = conn.execute(drop_query)
