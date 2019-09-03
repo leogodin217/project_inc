@@ -99,7 +99,8 @@ def save_query_data(query, config):
     odbc_connection = config['odbc_connection']
     conn = pyodbc.connect(odbc_connection, autocommit=True)
     save_path = Path(config['save_dir']).absolute()
-    save_path.mkdir(exist_ok=True)
+    if not save_path.exists():
+        save_path.mkdir(exist_ok=True, parents=True)
     file_name = 'supplyon-' + str(datetime.datetime.now().timestamp()) + '.csv'
     save_file = save_path /file_name    
 
