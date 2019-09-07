@@ -251,10 +251,10 @@ def test_set_data_types_handles_integers_and_dates():
     ]
 
     type_data = set_data_types(data, config)
-    type_data[0]['Planned_Production_Start_Date'].date().should.equal(datetime.date(2019, 2, 7))
-    type_data[1]['Planned_Production_Start_Date'].date().should.equal(datetime.date(2019, 2, 7))
-    type_data[0]['Updated_Planned_Production_End_Date'].date().should.equal(datetime.date(2019, 2, 7))
-    type_data[1]['Updated_Planned_Production_End_Date'].date().should.equal(datetime.date(2019, 2, 7))
+    type_data[0]['Planned_Production_Start_Date'].should.equal(datetime.date(2019, 2, 7))
+    type_data[1]['Planned_Production_Start_Date'].should.equal(datetime.date(2019, 2, 7))
+    type_data[0]['Updated_Planned_Production_End_Date'].should.equal(datetime.date(2019, 2, 7))
+    type_data[1]['Updated_Planned_Production_End_Date'].should.equal(datetime.date(2019, 2, 7))
     type_data[0]['Planned_Production_Qty'].should.equal(5)
     type_data[1]['Planned_Production_Qty'].should.equal(5)
     type_data[0]['Finished_Components_in_Transit_Qty'].should.equal(5)

@@ -231,5 +231,5 @@ def set_data_types(data, config):
                 row[field] = int(float(row[field]))
             # Handle dates, skipping None values
             if value is not None and fields[field] == 'date':
-                row[field] = datetime.datetime.fromisoformat(row[field]) 
+                row[field] = datetime.datetime.fromisoformat(row[field]).date()
     return type_data
