@@ -166,3 +166,45 @@ def run_stored_procedure(config):
         conn.close()
     except Exception as e:
         sys.exit(e.args)
+
+def upload_workcenter_codes(config):
+    '''
+    Saves the CSV file with workcenter codes to dbo.supplyon_workcenter_codes
+
+    Parameters:
+        config: Dict containing configuration inforamtion from config.json
+    
+    Returns: Bool indicating success or failure
+    '''
+    if 'odbc_connection' not in config:
+        sys.exit('odbc_connection missing from config.json')
+    if 'workcenter_codes_file' not in config:
+        sys.exit('workcenter_codes_file not in config')
+    file_name = config['workcenter_codes_file']
+    if not Path(file_name).exists():
+        sys.exit(f'Workcenter codes file not found in {file_name}')    
+    
+    # Read in the data
+    names = names=['progress', 'work_center_code', 'work_center_name', 'notes']
+    converters = {
+        'progress': int,
+        'work_center_code': str.strip,
+        'work_center_name': str.strip,
+        'notes': str.strip
+    }
+    workcenter_codes = pd.read_csv(file_name,
+                               names=names,
+                               converters=converters,
+                               skiprows=1)
+    rows = [(int(row[0]), row[1], row[2], row[3]) for row in workcenter_codes.to_records(index=False)]
+
+    try:
+        conn = pyodbc.connect(config['odbc_connection'], autocommit=True)
+        cursor = conn.cursor()
+        cursor.execute('truncate table dbo.supplyon_workcenter_codes')
+        sql = 'insert into dbo.supplyon_workcenter_codes (progress, workcenter_code, workcenter_name, additional_notes) values(?, ?, ?, ?)'
+        cursor.executemany(sql, rows) 
+    except Exception as e:
+        sys.exit('Could not upload workcenter code data')
+    return True
+                            
