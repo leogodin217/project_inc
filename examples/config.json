@@ -1,0 +1,51 @@
+{
+    "supplyon_headers": {
+	    "Ocp-Apim-Subscription-Key": "get from supplyon",
+	    "Content-Type": "text/xml",
+        "SOAPAction": "http://gateway.api.prd.supplyon.com/ProductionToSupply"
+    },
+    "default_values": {
+        "string": "No Value",
+        "integer": 0,
+        "date": "2099-01-01"
+    },
+    "min_date": "2018-09-01",
+    "customers": ["cust1", "cust2"],
+    "workcenter_codes_file": "C:\\supplyon\\workcenter_process_codes.csv",
+    "wsdl": "C:\\supplyon\\ProductionDataSupplyService_prd.wsdl",
+    "save_dir": "C:\\supplyon\\csv",
+    "odbc_connection": "DRIVER={ODBC Driver 13 for SQL Server};SERVER=[your server];DATABASE=[your database];UID=[user];PWD=[password]",
+    "needed_fields": ["Work_Production_Order_No_Supplier", "Part_Material_Number_Buyer", "Vendor_Code_Buyer_Supplier_Reference"],
+    "mandatory_fields": {
+        "Part_Material_Number_Buyer": "string",
+        "Vendor_Code_Buyer_Supplier_Reference": "string",
+        "Work_Production_Order_No_Supplier": "string",
+        "Planned_Production_Start_Date": "date",
+        "Planned_Production_End_Date": "date",
+        "Planned_Production_Qty": "integer",
+        "Actual_Start_Production_Qty": "integer",
+        "Actual_End_Production_Qty": "integer",
+        "Work_Order_Status": "string",
+        "Finished_Components_in_Storage_Qty": "integer" 
+    },
+    "optional_fields": {
+        "Doc_Number_DemandReference_Buyer": "string",
+        "SchedLine": "string",
+        "Buyer_Plant_No": "string",
+        "Assembly_Work_Order_Reference": "string",
+        "Work_Order_Category": "string",
+        "Current_Production_Step": "integer",
+        "TotalNumber_Production_Steps": "integer",
+        "Production_Lead_Time": "integer",
+        "Updated_Planned_Production_End_Date": "date",
+        "Actual_Production_Start_Date": "date",
+        "Actual_Production_End_Date": "date",
+        "Current_Work_Order_Qty": "integer",
+        "Finished_Components_in_Transit_Qty": "integer",
+        "Supplier_Input_Material_Qty": "integer",
+        "Supplier_Input_Material_on_Order_Qty": "integer",
+        "Input_Material_Lead_Time_cal_days": "integer",
+        "Input_Material_Order_Date": "date",
+        "Input_Material_Delivery_Date": "date"
+    }
+}
